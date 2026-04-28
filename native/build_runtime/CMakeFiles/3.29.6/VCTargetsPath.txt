@@ -1,1 +1,0 @@
-G:/VS2023/MSBuild/Microsoft/VC/v170

@@ -1,5 +1,0 @@
-E:/wwp_code/Project/CIQT_Medical/Medical_Camera/native/build_runtime/CMakeFiles/medical_camera_hikvision.dir
-E:/wwp_code/Project/CIQT_Medical/Medical_Camera/native/build_runtime/CMakeFiles/medical_camera_hikvision_capi.dir
-E:/wwp_code/Project/CIQT_Medical/Medical_Camera/native/build_runtime/CMakeFiles/hikvision_sdk_demo.dir
-E:/wwp_code/Project/CIQT_Medical/Medical_Camera/native/build_runtime/CMakeFiles/ALL_BUILD.dir
-E:/wwp_code/Project/CIQT_Medical/Medical_Camera/native/build_runtime/CMakeFiles/ZERO_CHECK.dir
