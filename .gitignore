@@ -149,6 +149,11 @@ cython_debug/
 # PyCharm / JetBrains
 .idea/
 
+# AI tools
+.claude/
+.cursor/
+.gatekeeper/
+
 # VS Code
 .vscode/
 
