@@ -36,7 +36,7 @@ from medical_camera.ui.demo_styles import DEMO_STYLE
 class StyleDemoWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
-        self.setWindowTitle("CIQT UI Style Demo")
+        self.setWindowTitle("Medical UI Style Demo")
         self.resize(1720, 980)
         self.setStyleSheet(DEMO_STYLE)
 

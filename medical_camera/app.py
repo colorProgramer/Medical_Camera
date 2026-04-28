@@ -11,7 +11,7 @@ from medical_camera.ui.main_window import MainWindow
 
 def main() -> int:
     app = QApplication(sys.argv)
-    app.setApplicationName("CIQT Medical Camera")
+    app.setApplicationName("Medical Camera")
     icon_path = Path(__file__).resolve().parent.parent / "assets" / "branding" / "app_icon.ico"
     if icon_path.exists():
         app.setWindowIcon(QIcon(str(icon_path)))

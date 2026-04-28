@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
         self.dispatcher = ActionDispatcher()
-        self.setWindowTitle("CIQT Medical Camera")
+        self.setWindowTitle("Medical Camera")
         self.resize(1680, 980)
         self._last_theme = "light"
         self._last_log_count = 0
@@ -157,7 +157,7 @@ class MainWindow(QMainWindow):
         brand_text_layout = QVBoxLayout()
         brand_text_layout.setContentsMargins(0, 0, 0, 0)
         brand_text_layout.setSpacing(2)
-        brand = QLabel("CIQT 医疗相机")
+        brand = QLabel("医疗相机")
         brand.setObjectName("BrandTitle")
         brand_subtitle = QLabel("ENDOSCOPY CONTROL WORKSTATION")
         brand_subtitle.setObjectName("BrandSubtitle")

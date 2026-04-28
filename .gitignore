@@ -154,6 +154,8 @@ cython_debug/
 
 # Project specific
 ReadOnly/
-native/
+native/build/
+native/bin/
+native/lib/
 *.tmp
 *.log

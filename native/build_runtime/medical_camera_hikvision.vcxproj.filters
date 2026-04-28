@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="E:\wwp_code\Project\CIQT_Medical\Medical_Camera\native\src\hikvision_camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\wwp_code\Project\CIQT_Medical\Medical_Camera\native\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{58DFF391-D34B-37EB-90F0-822DC0E2074E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
