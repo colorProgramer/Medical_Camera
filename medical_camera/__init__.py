@@ -1,0 +1,1 @@
+"""Medical camera desktop application."""
