@@ -80,8 +80,6 @@ class MainWindow(QMainWindow):
         self.help_button: QPushButton
         self.connect_button: QPushButton
         self.disconnect_button: QPushButton
-        self.start_button: QPushButton
-        self.stop_button: QPushButton
         self.save_button: QPushButton
         self.import_button: QPushButton
         self.export_button: QPushButton
@@ -267,40 +265,15 @@ class MainWindow(QMainWindow):
         button_grid.setVerticalSpacing(6)
         self.connect_button = QPushButton("连接相机")
         self.connect_button.setObjectName("PrimaryButton")
-        self.connect_button.clicked.connect(lambda: self._dispatch("connect_device"))
+        self.connect_button.clicked.connect(lambda: self._dispatch("open_camera"))
         self.disconnect_button = QPushButton("断开")
-        self.disconnect_button.clicked.connect(lambda: self._dispatch("disconnect_device"))
-        self.start_button = QPushButton("开始采集")
-        self.start_button.setObjectName("SuccessButton")
-        self.start_button.clicked.connect(lambda: self._dispatch("start_collection"))
-        self.stop_button = QPushButton("停止采集")
-        self.stop_button.setObjectName("DangerButton")
-        self.stop_button.clicked.connect(lambda: self._dispatch("stop_collection"))
+        self.disconnect_button.clicked.connect(lambda: self._dispatch("close_camera"))
         self.save_button = QPushButton("保存图片")
         self.save_button.clicked.connect(self._on_save_image)
 
-        self.burst_count_spin = QSpinBox()
-        self.burst_count_spin.setRange(1, 99)
-        self.burst_count_spin.setValue(int(self._settings.value("burst_count", 1)))
-        self.burst_count_spin.setFixedWidth(60)
-        self.burst_count_spin.setAlignment(Qt.AlignCenter)
-        self.burst_count_spin.setToolTip("连拍数量")
-        self.lbl_burst_count = QLabel("连拍数量")
-        self.lbl_burst_count.setObjectName("FieldLabel")
-        self.lbl_burst_count.setAlignment(Qt.AlignCenter)
-
-        burst_layout = QHBoxLayout()
-        burst_layout.setSpacing(4)
-        burst_layout.addWidget(self.lbl_burst_count)
-        burst_layout.addWidget(self.burst_count_spin)
-        burst_layout.addStretch()
-
         button_grid.addWidget(self.connect_button, 0, 0)
         button_grid.addWidget(self.disconnect_button, 0, 1)
-        button_grid.addWidget(self.start_button, 1, 0)
-        button_grid.addWidget(self.stop_button, 1, 1)
-        button_grid.addLayout(burst_layout, 2, 0)
-        button_grid.addWidget(self.save_button, 2, 1)
+        button_grid.addWidget(self.save_button, 1, 0, 1, 2)
         button_grid.setColumnStretch(0, 1)
         button_grid.setColumnStretch(1, 1)
         layout.addLayout(button_grid)
@@ -678,13 +651,11 @@ class MainWindow(QMainWindow):
         if action == "refresh_devices" and self.dispatcher.state.current_profile.key == "hikvision":
             self._start_device_enumeration()
 
-        if action == "connect_device":
+        if action == "open_camera":
             self._param_sync_timer.start()
-        elif action == "start_collection":
-            self.poller.start()
-        elif action == "stop_collection":
-            self.poller.stop()
-        elif action == "disconnect_device":
+            if self.dispatcher.state.connected:
+                self.poller.start()
+        elif action == "close_camera":
             self.poller.stop()
             self._param_sync_timer.stop()
             self.viewport.clear_frame()
@@ -816,8 +787,6 @@ class MainWindow(QMainWindow):
 
         self.connect_button.setIcon(build_icon("connect", action_color))
         self.disconnect_button.setIcon(build_icon("disconnect", icon_color))
-        self.start_button.setIcon(build_icon("play", action_color))
-        self.stop_button.setIcon(build_icon("stop", action_color))
         self.save_button.setIcon(build_icon("save", action_color))
         self.import_button.setIcon(build_icon("open", action_color))
         self.export_button.setIcon(build_icon("save", action_color))
@@ -867,8 +836,7 @@ class MainWindow(QMainWindow):
         )
         if file_path:
             self._last_save_dir = os.path.dirname(file_path)
-            count = self.burst_count_spin.value()
-            self._dispatch("save_image", {"file_path": file_path, "count": count})
+            self._dispatch("save_image", {"file_path": file_path, "count": 1})
 
     def closeEvent(self, event) -> None:
         if hasattr(self, "poller"):
@@ -876,7 +844,6 @@ class MainWindow(QMainWindow):
         if hasattr(self, "recognition_worker"):
             self.recognition_worker.stop()
         self._settings.setValue("last_save_dir", self._last_save_dir)
-        self._settings.setValue("burst_count", self.burst_count_spin.value())
         event.accept()
 
 
