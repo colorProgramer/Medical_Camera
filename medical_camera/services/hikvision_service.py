@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
@@ -290,6 +291,66 @@ class HikvisionCameraService:
             )
         except Exception as exc:
             return ServiceResult(False, f"读取画面帧异常: {exc}")
+
+    def save_current_frame(self, file_path: str) -> ServiceResult:
+        if not self._connected:
+            return ServiceResult(False, "相机未连接，无法保存图片")
+        
+        result = self.get_latest_frame(timeout_ms=500)
+        if not result.ok:
+            return result
+        
+        return self._save_frame_to_file(result.data, file_path)
+
+    def _save_frame_to_file(self, frame: HikvisionFrameView, file_path: str) -> ServiceResult:
+        import cv2
+        import numpy as np
+        
+        try:
+            width, height = frame.width, frame.height
+            data = frame.data
+            pixel_type = frame.pixel_type
+            
+            pixel_count = width * height
+            if len(data) == pixel_count:
+                arr = np.frombuffer(data, dtype=np.uint8).reshape((height, width))
+                # Pixel type enum values from MvCameraControl (matches viewport.py)
+                if pixel_type == 0x01080008: bgr = cv2.cvtColor(arr, cv2.COLOR_BayerGR2BGR)
+                elif pixel_type == 0x01080009: bgr = cv2.cvtColor(arr, cv2.COLOR_BayerRG2BGR)
+                elif pixel_type == 0x0108000A: bgr = cv2.cvtColor(arr, cv2.COLOR_BayerGB2BGR)
+                elif pixel_type == 0x0108000B: bgr = cv2.cvtColor(arr, cv2.COLOR_BayerBG2BGR)
+                else: bgr = arr # Mono
+            elif len(data) >= pixel_count * 3:
+                # Assuming RGB pack from SDK for 3-byte formats
+                arr = np.frombuffer(data, dtype=np.uint8).reshape((height, width, 3))
+                bgr = cv2.cvtColor(arr, cv2.COLOR_RGB2BGR)
+            else:
+                return ServiceResult(False, f"不支持的像素格式(Type:0x{pixel_type:08X}, Data:{len(data)})")
+                
+            ext = os.path.splitext(file_path)[1].lower()
+            
+            if ext == ".raw":
+                # Save as binary raw dump
+                with open(file_path, "wb") as f:
+                    f.write(data)
+                return ServiceResult(True, f"原始像素数据已保存(RAW): {file_path}")
+            
+            # Setup high-quality parameters for OpenCV
+            params = []
+            if ext in (".jpg", ".jpeg"):
+                params = [cv2.IMWRITE_JPEG_QUALITY, 100]
+            elif ext == ".png":
+                params = [cv2.IMWRITE_PNG_COMPRESSION, 0] # 0 = No compression (highest speed/quality)
+            elif ext in (".tif", ".tiff"):
+                params = [cv2.IMWRITE_TIFF_COMPRESSION, 5] # 5 = LZW (Lossless)
+                
+            success = cv2.imwrite(file_path, bgr, params)
+            if not success:
+                return ServiceResult(False, f"OpenCV 写入文件失败: {file_path}")
+                
+            return ServiceResult(True, f"图片保存成功({ext.upper().strip('.')}): {file_path}")
+        except Exception as exc:
+            return ServiceResult(False, f"保存图片失败: {exc}")
 
     def shutdown(self) -> None:
         if not self._bridge:

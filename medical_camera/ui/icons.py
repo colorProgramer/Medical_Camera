@@ -44,6 +44,12 @@ def build_icon(name: str, color: str, size: int = 18) -> QIcon:
             _draw_measure_icon(painter, size)
         case "crosshair":
             _draw_crosshair_icon(painter, size)
+        case "expand":
+            _draw_expand_icon(painter, size)
+        case "compress":
+            _draw_compress_icon(painter, size)
+        case "eyedropper":
+            _draw_eyedropper_icon(painter, size)
         case _:
             _draw_placeholder_icon(painter, size)
 
@@ -161,6 +167,46 @@ def _draw_crosshair_icon(painter: QPainter, size: int) -> None:
     painter.drawLine(QPointF(size * 0.18, size * 0.50), QPointF(size * 0.82, size * 0.50))
     painter.drawEllipse(QRectF(size * 0.34, size * 0.34, size * 0.32, size * 0.32))
 
+
+def _draw_expand_icon(painter: QPainter, size: int) -> None:
+    m = size * 0.15
+    o = size * 0.35
+    painter.drawLine(QPointF(m, o), QPointF(m, m))
+    painter.drawLine(QPointF(m, m), QPointF(o, m))
+    painter.drawLine(QPointF(size-o, m), QPointF(size-m, m))
+    painter.drawLine(QPointF(size-m, m), QPointF(size-m, o))
+    painter.drawLine(QPointF(m, size-o), QPointF(m, size-m))
+    painter.drawLine(QPointF(m, size-m), QPointF(o, size-m))
+    painter.drawLine(QPointF(size-o, size-m), QPointF(size-m, size-m))
+    painter.drawLine(QPointF(size-m, size-m), QPointF(size-m, size-o))
+
+def _draw_compress_icon(painter: QPainter, size: int) -> None:
+    m = size * 0.15
+    o = size * 0.35
+    painter.drawLine(QPointF(o, m), QPointF(o, o))
+    painter.drawLine(QPointF(o, o), QPointF(m, o))
+    painter.drawLine(QPointF(size-m, o), QPointF(size-o, o))
+    painter.drawLine(QPointF(size-o, o), QPointF(size-o, m))
+    painter.drawLine(QPointF(m, size-o), QPointF(o, size-o))
+    painter.drawLine(QPointF(o, size-o), QPointF(o, size-m))
+    painter.drawLine(QPointF(size-o, size-m), QPointF(size-o, size-o))
+    painter.drawLine(QPointF(size-o, size-o), QPointF(size-m, size-o))
+
+def _draw_eyedropper_icon(painter: QPainter, size: int) -> None:
+    # Body of eyedropper
+    path = QPainterPath()
+    path.moveTo(size * 0.70, size * 0.20)
+    path.lineTo(size * 0.80, size * 0.30)
+    path.lineTo(size * 0.40, size * 0.70)
+    path.lineTo(size * 0.25, size * 0.85) # Tip
+    path.lineTo(size * 0.15, size * 0.75)
+    path.lineTo(size * 0.30, size * 0.60)
+    path.closeSubpath()
+    painter.drawPath(path)
+    # Bulb
+    painter.drawEllipse(QRectF(size * 0.65, size * 0.10, size * 0.25, size * 0.25))
+    # Fluid line
+    painter.drawLine(QPointF(size * 0.45, size * 0.55), QPointF(size * 0.55, size * 0.65))
 
 def _draw_placeholder_icon(painter: QPainter, size: int) -> None:
     painter.drawEllipse(QRectF(4, 4, size - 8, size - 8))

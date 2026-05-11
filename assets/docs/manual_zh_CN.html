@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Camera Manual</title>
+    <link rel="stylesheet" href="manual_style.css">
+</head>
+<body>
+    <h1>Medical Camera 医疗相机使用说明书 (V2.0)</h1>
+<h2>1. 软件概述</h2>
+<p>本软件专为医疗内窥镜成像系统设计，支持海康工业相机（GigE/USB3.0）及标准 UVC 协议相机。提供实时画面采集、图像参数控制、精密几何识别及结果分析功能。</p>
+<h2>2. 设备连接与管理</h2>
+<h3>2.1 相机类型选择</h3>
+<p>在左侧面板的“设备列表”中，可选择：
+- <strong>海康工业相机</strong>：通过海康 MVS 驱动连接，支持高精度曝光和增益调节。
+- <strong>USB 相机</strong>：支持标准免驱 UVC 模块，适用于大多数内窥镜模组。</p>
+<h3>2.2 枚举与打开</h3>
+<ul>
+<li>点击“刷新”图标枚举当前系统连接的硬件。</li>
+<li>选中目标设备后，点击“打开相机”进入实时预览。</li>
+<li>若连接失败，请检查设备是否被其他软件占用或驱动是否安装。</li>
+</ul>
+<h2>3. 图像参数调节</h2>
+<h3>3.1 曝光与增益</h3>
+<ul>
+<li><strong>海康相机</strong>：支持精细的数值步进，支持手动/自动曝光切换。</li>
+<li><strong>USB 相机</strong>：提供标准 UVC 调节项，包括亮度、对比度等。</li>
+</ul>
+<h3>3.2 白平衡</h3>
+<ul>
+<li>支持实时 RGB 三通道增益调节。</li>
+<li>建议在标准色温光源下进行“自动白平衡”校准。</li>
+</ul>
+<h2>4. 识别控制功能</h2>
+<p>本系统核心功能在于对图像中的特定几何特征进行自动检测。</p>
+<h3>4.1 识别区域 (Scope)</h3>
+<ul>
+<li><strong>全图模式</strong>：对整个画面进行全量分析。</li>
+<li><strong>ROI 框选</strong>：通过鼠标在预览区拖拽生成蓝色感兴趣区域，仅在该区域内进行识别，极大提高帧率。</li>
+<li><strong>三点定圆</strong>：针对圆形内窥镜视场，用户点击三个边缘点，系统自动拟合出完美的圆形边界（Circumcircle）。</li>
+</ul>
+<h3>4.2 视场类型与阈值</h3>
+<ul>
+<li>支持“圆形视场”和“矩形视场”检测。</li>
+<li><strong>视场边界阈值</strong>：调节二值化阈值，以适应不同的背景光强。</li>
+<li><strong>圆形提取阈值</strong>：调节圆度拟合的敏感度。</li>
+</ul>
+<h2>5. 显示叠加与辅助</h2>
+<p>通过“显示叠加”面板可开启辅助线：
+- <strong>视场边界</strong>：高亮显示检测到的 FOV 边缘。
+- <strong>视场内图形</strong>：显示检测到的几何特征（如 5 点标定块）。
+- <strong>n% 视场圈</strong>：自定义比例的参考圆环，用于畸变测试。
+- <strong>十字线/米字线</strong>：辅助构图与中心对齐。</p>
+<h2>6. 识别结果分析</h2>
+<p>识别结果将实时显示在右下角的表格中：
+- <strong>方位</strong>：特征点相对于中心的坐标。
+- <strong>长轴/短轴</strong>：检测到的几何体尺寸数据。</p>
+<h2>7. 配置管理</h2>
+<ul>
+<li><strong>保存配置</strong>：将当前所有相机参数、识别算法设置、ROI 坐标保存到本地 <code>config_auto.json</code>。</li>
+<li><strong>加载配置</strong>：一键恢复之前保存的复杂测试环境。</li>
+<li><strong>恢复默认</strong>：将所有参数重置为出厂状态。</li>
+</ul>
+<h2>8. 常见问题排查</h2>
+<ul>
+<li><strong>黑屏</strong>：检查相机是否已打开，或分辨率设置是否超出硬件带宽。</li>
+<li><strong>识别不准</strong>：请确保环境光照均匀，并适当调节“视场边界阈值”。</li>
+<li><strong>软件卡顿</strong>：建议开启“ROI 框选”模式以减少图像处理负担。</li>
+</ul>
+</body>
+</html>
+    

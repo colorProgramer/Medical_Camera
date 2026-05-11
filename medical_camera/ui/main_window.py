@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from pathlib import Path
+import os
 
-from PySide6.QtCore import Qt, QTimer, QThread, Signal
+from PySide6.QtCore import Qt, QTimer, QThread, Signal, QSettings
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -57,6 +58,8 @@ class MainWindow(QMainWindow):
         self.resize(1680, 980)
         self._last_theme = "light"
         self._last_log_count = 0
+        self._settings = QSettings("CIQT", "MedicalCamera")
+        self._last_save_dir = self._settings.value("last_save_dir", "")
         self.setStyleSheet(get_app_style("light"))
 
         self.device_combo: QComboBox
@@ -120,10 +123,23 @@ class MainWindow(QMainWindow):
         self._start_device_enumeration()
 
     def _setup_poller(self) -> None:
-        from medical_camera.ui.frame_poller import HikvisionFramePoller
-        self.poller = HikvisionFramePoller(self.dispatcher)
-        self.poller.frame_ready.connect(self._on_frame_ready)
+        from medical_camera.ui.frame_poller import HikvisionFramePoller, RecognitionWorker
+        
+        # 1. Setup Recognition Worker
+        self.recognition_worker = RecognitionWorker(self.dispatcher)
+        self.recognition_worker.recognition_result_ready.connect(self.viewport.set_recognition_result)
+        self.recognition_worker.start()
+
+        # 2. Setup Frame Poller
+        self.poller = HikvisionFramePoller(self.dispatcher, self.recognition_worker)
+        self.poller.image_ready.connect(self._on_frame_ready)
         self.poller.stats_ready.connect(self._on_stats_ready)
+        
+        # 3. Connect Viewport interactions
+        self.viewport.roi_changed.connect(self.recognition_worker.set_roi_rect)
+        self.viewport.fov_circle_defined.connect(lambda c: self._dispatch("set_manual_fov_circle", {"circle": c}))
+        self.viewport.mouse_moved.connect(self.poller.set_probe_point)
+        self.viewport.probe_paused_changed.connect(self.poller.set_probe_paused)
 
     def _setup_param_sync_timer(self) -> None:
         self._param_sync_timer = QTimer(self)
@@ -149,21 +165,11 @@ class MainWindow(QMainWindow):
         badge_layout.setSpacing(12)
 
         self.logo_label = QLabel()
-        self.logo_label.setFixedSize(42, 42)
+        self.logo_label.setFixedHeight(40)
+        self.logo_label.setContentsMargins(0, 0, 0, 0)
         self.logo_label.setAlignment(Qt.AlignCenter)
         self.logo_label.setPixmap(self._load_logo_pixmap())
         badge_layout.addWidget(self.logo_label)
-
-        brand_text_layout = QVBoxLayout()
-        brand_text_layout.setContentsMargins(0, 0, 0, 0)
-        brand_text_layout.setSpacing(2)
-        brand = QLabel("医疗相机")
-        brand.setObjectName("BrandTitle")
-        brand_subtitle = QLabel("ENDOSCOPY CONTROL WORKSTATION")
-        brand_subtitle.setObjectName("BrandSubtitle")
-        brand_text_layout.addWidget(brand)
-        brand_text_layout.addWidget(brand_subtitle)
-        badge_layout.addLayout(brand_text_layout)
         layout.addWidget(badge)
         layout.addStretch(1)
 
@@ -257,6 +263,8 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.device_selector)
 
         button_grid = QGridLayout()
+        button_grid.setHorizontalSpacing(6)
+        button_grid.setVerticalSpacing(6)
         self.connect_button = QPushButton("连接相机")
         self.connect_button.setObjectName("PrimaryButton")
         self.connect_button.clicked.connect(lambda: self._dispatch("connect_device"))
@@ -269,13 +277,32 @@ class MainWindow(QMainWindow):
         self.stop_button.setObjectName("DangerButton")
         self.stop_button.clicked.connect(lambda: self._dispatch("stop_collection"))
         self.save_button = QPushButton("保存图片")
-        self.save_button.clicked.connect(lambda: self._dispatch("save_image"))
+        self.save_button.clicked.connect(self._on_save_image)
+
+        self.burst_count_spin = QSpinBox()
+        self.burst_count_spin.setRange(1, 99)
+        self.burst_count_spin.setValue(int(self._settings.value("burst_count", 1)))
+        self.burst_count_spin.setFixedWidth(60)
+        self.burst_count_spin.setAlignment(Qt.AlignCenter)
+        self.burst_count_spin.setToolTip("连拍数量")
+        self.lbl_burst_count = QLabel("连拍数量")
+        self.lbl_burst_count.setObjectName("FieldLabel")
+        self.lbl_burst_count.setAlignment(Qt.AlignCenter)
+
+        burst_layout = QHBoxLayout()
+        burst_layout.setSpacing(4)
+        burst_layout.addWidget(self.lbl_burst_count)
+        burst_layout.addWidget(self.burst_count_spin)
+        burst_layout.addStretch()
 
         button_grid.addWidget(self.connect_button, 0, 0)
         button_grid.addWidget(self.disconnect_button, 0, 1)
         button_grid.addWidget(self.start_button, 1, 0)
         button_grid.addWidget(self.stop_button, 1, 1)
-        button_grid.addWidget(self.save_button, 2, 0, 1, 2)
+        button_grid.addLayout(burst_layout, 2, 0)
+        button_grid.addWidget(self.save_button, 2, 1)
+        button_grid.setColumnStretch(0, 1)
+        button_grid.setColumnStretch(1, 1)
         layout.addLayout(button_grid)
         return group
 
@@ -601,12 +628,12 @@ class MainWindow(QMainWindow):
 
     def _load_logo_pixmap(self) -> QPixmap:
         branding_dir = Path(__file__).resolve().parent.parent.parent / "assets" / "branding"
-        for file_name in ("company_logo.png", "company_logo.svg", "company_logo.jpg"):
-            file_path = branding_dir / file_name
-            if file_path.exists():
-                pixmap = QPixmap(str(file_path))
-                if not pixmap.isNull():
-                    return pixmap.scaled(34, 34, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        logo_path = branding_dir / "logo.png"
+        if logo_path.exists():
+            pixmap = QPixmap(str(logo_path))
+            if not pixmap.isNull():
+                # Scale to height to adapt to the image's proportions (horizontal logo)
+                return pixmap.scaledToHeight(40, Qt.SmoothTransformation)
 
         fallback = self.style().standardIcon(QStyle.SP_ComputerIcon)
         return fallback.pixmap(30, 30)
@@ -662,8 +689,8 @@ class MainWindow(QMainWindow):
             self._param_sync_timer.stop()
             self.viewport.clear_frame()
 
-    def _on_frame_ready(self, frame) -> None:
-        self.viewport.set_frame(frame.data, frame.width, frame.height, frame.byte_count, frame.frame_number, frame.pixel_type)
+    def _on_frame_ready(self, image, frame_number, pixel_type) -> None:
+        self.viewport.set_image(image, frame_number)
 
     def _on_stats_ready(self, fps: float, frame_number: int) -> None:
         self.viewport.set_display_fps(fps)
@@ -825,6 +852,32 @@ class MainWindow(QMainWindow):
             if not file_path.endswith(".mfs"):
                 file_path += ".mfs"
             self._dispatch("export_mfs", {"file_path": file_path})
+
+    def _on_save_image(self) -> None:
+        if self.dispatcher.state.current_profile.key == "hikvision":
+            filters = "JPEG (*.jpg *.jpeg);;PNG (*.png);;BMP (*.bmp);;TIFF (*.tif *.tiff);;Raw (*.raw);;All Files (*)"
+        else:
+            filters = "JPEG (*.jpg *.jpeg);;PNG (*.png);;BMP (*.bmp);;Raw (*.raw);;All Files (*)"
+
+        file_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "保存图片",
+            self._last_save_dir,
+            filters
+        )
+        if file_path:
+            self._last_save_dir = os.path.dirname(file_path)
+            count = self.burst_count_spin.value()
+            self._dispatch("save_image", {"file_path": file_path, "count": count})
+
+    def closeEvent(self, event) -> None:
+        if hasattr(self, "poller"):
+            self.poller.stop()
+        if hasattr(self, "recognition_worker"):
+            self.recognition_worker.stop()
+        self._settings.setValue("last_save_dir", self._last_save_dir)
+        self._settings.setValue("burst_count", self.burst_count_spin.value())
+        event.accept()
 
 
 class QLineEditLike(QLabel):

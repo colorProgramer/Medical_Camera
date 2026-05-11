@@ -12,10 +12,6 @@ endif()
 
 set(MVS_SDK_ROOT "" CACHE PATH "Root directory of Hikrobot MVS SDK")
 
-if(NOT MVS_SDK_ROOT)
-    message(FATAL_ERROR "Please set MVS_SDK_ROOT to your Hikrobot MVS SDK installation path.")
-endif()
-
 find_path(MVS_INCLUDE_DIR
     NAMES MvCameraControl.h
     PATHS
@@ -33,62 +29,81 @@ find_library(MVS_CAMERA_CONTROL_LIB
     NO_DEFAULT_PATH
 )
 
-if(NOT MVS_INCLUDE_DIR)
-    message(FATAL_ERROR "MvCameraControl.h not found under MVS_SDK_ROOT.")
+if(MVS_INCLUDE_DIR AND MVS_CAMERA_CONTROL_LIB)
+    message(STATUS "Hikvision MVS SDK found. Building Hikvision targets.")
+    set(HIK_FOUND TRUE)
+else()
+    message(WARNING "Hikvision MVS SDK not found. Skipping Hikvision targets. (Set MVS_SDK_ROOT if needed)")
+    set(HIK_FOUND FALSE)
 endif()
 
-if(NOT MVS_CAMERA_CONTROL_LIB)
-    message(FATAL_ERROR "MvCameraControl.lib not found under MVS_SDK_ROOT.")
+if(HIK_FOUND)
+    add_library(medical_camera_hikvision STATIC
+        src/hikvision_camera.cpp
+    )
+
+    target_include_directories(medical_camera_hikvision
+        PUBLIC
+            ${CMAKE_CURRENT_SOURCE_DIR}/include
+            ${MVS_INCLUDE_DIR}
+    )
+
+    target_link_libraries(medical_camera_hikvision
+        PUBLIC
+            ${MVS_CAMERA_CONTROL_LIB}
+    )
+
+    target_compile_definitions(medical_camera_hikvision
+        PRIVATE
+            NOMINMAX
+            WIN32_LEAN_AND_MEAN
+    )
+
+    add_library(medical_camera_hikvision_capi SHARED
+        src/hikvision_c_api.cpp
+    )
+
+    target_include_directories(medical_camera_hikvision_capi
+        PUBLIC
+            ${CMAKE_CURRENT_SOURCE_DIR}/include
+            ${MVS_INCLUDE_DIR}
+    )
+
+    target_link_libraries(medical_camera_hikvision_capi
+        PRIVATE
+            medical_camera_hikvision
+    )
+
+    target_compile_definitions(medical_camera_hikvision_capi
+        PRIVATE
+            MEDICAL_CAMERA_HIKVISION_CAPI_EXPORTS
+            NOMINMAX
+            WIN32_LEAN_AND_MEAN
+    )
+
+    add_executable(hikvision_sdk_demo
+        examples/hikvision_sdk_demo.cpp
+    )
+
+    target_link_libraries(hikvision_sdk_demo
+        PRIVATE
+            medical_camera_hikvision
+    )
 endif()
 
-add_library(medical_camera_hikvision STATIC
-    src/hikvision_camera.cpp
+# USB Utilities (DirectShow based)
+add_library(medical_camera_usb SHARED
+    src/usb_utils.cpp
 )
 
-target_include_directories(medical_camera_hikvision
+target_include_directories(medical_camera_usb
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${MVS_INCLUDE_DIR}
 )
 
-target_link_libraries(medical_camera_hikvision
-    PUBLIC
-        ${MVS_CAMERA_CONTROL_LIB}
-)
-
-target_compile_definitions(medical_camera_hikvision
+target_compile_definitions(medical_camera_usb
     PRIVATE
+        MEDICAL_CAMERA_USB_EXPORTS
         NOMINMAX
         WIN32_LEAN_AND_MEAN
-)
-
-add_library(medical_camera_hikvision_capi SHARED
-    src/hikvision_c_api.cpp
-)
-
-target_include_directories(medical_camera_hikvision_capi
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${MVS_INCLUDE_DIR}
-)
-
-target_link_libraries(medical_camera_hikvision_capi
-    PRIVATE
-        medical_camera_hikvision
-)
-
-target_compile_definitions(medical_camera_hikvision_capi
-    PRIVATE
-        MEDICAL_CAMERA_HIKVISION_CAPI_EXPORTS
-        NOMINMAX
-        WIN32_LEAN_AND_MEAN
-)
-
-add_executable(hikvision_sdk_demo
-    examples/hikvision_sdk_demo.cpp
-)
-
-target_link_libraries(hikvision_sdk_demo
-    PRIVATE
-        medical_camera_hikvision
 )

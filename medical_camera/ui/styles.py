@@ -26,10 +26,17 @@ QFrame#TopBar, QFrame#StatusBar {
 QFrame#StatusBar { border-top: 1px solid #e4e7ed; border-bottom: none; }
 QFrame#SidePanel, QFrame#RightPanel, QFrame#CenterPanel { background: #f5f7fa; }
 
-QFrame#Card, QFrame#BrandBadge, QFrame#InfoPill {
+QFrame#Card {
     background: rgba(255, 255, 255, 235);
     border: 1px solid #e4e7ed;
     border-radius: 12px;
+}
+
+QFrame#BrandBadge, QFrame#InfoPill {
+    background: rgba(255, 255, 255, 235);
+    border: 1px solid #e4e7ed;
+    border-radius: 8px;
+    min-height: 60px;
 }
 
 QLabel#BrandTitle { font-size: 18px; font-weight: 700; color: #1559b7; }
@@ -40,8 +47,8 @@ QLabel#FieldLabel { color: #606266; font-weight: 600; }
 QLabel#ValueBadge {
     background: #ffffff;
     border: 1px solid #e4e7ed;
-    border-radius: 10px;
-    padding: 7px 10px;
+    border-radius: 8px;
+    padding: 5px 10px;
     color: #303133;
 }
 
@@ -76,15 +83,26 @@ QPushButton#GhostButton:hover {
     border-color: #c6e2ff;
     color: #409eff;
 }
+QPushButton#GhostButton:pressed, QPushButton#GhostButton:checked {
+    background-color: #d9ecff;
+    border-color: #a3d3ff;
+}
 QPushButton#TopIconButton {
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0 12px;
+    min-width: 80px;
+    min-height: 38px;
+    max-height: 38px;
+    padding: 0 10px;
     background-color: #ffffff;
     color: #409eff;
     border: 1px solid #dcdfe6;
+    border-radius: 8px;
 }
 QPushButton#TopIconButton:hover { background-color: #ecf5ff; border-color: #c6e2ff; }
+QPushButton#TopIconButton::menu-indicator {
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+    right: 4px;
+}
 QPushButton#CompactButton {
     min-width: 38px;
     max-width: 38px;
@@ -137,6 +155,46 @@ QComboBox QAbstractItemView {
     color: #303133;
     border: 1px solid #e0e0e0;
 }
+
+QSpinBox::up-button, QDoubleSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: top right;
+    width: 20px;
+    border-left: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    border-top-right-radius: 10px;
+    background: #fcfcfc;
+}
+
+QSpinBox::up-arrow, QDoubleSpinBox::up-arrow {
+    image: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 5px solid #55aaff;
+    width: 0px;
+    height: 0px;
+}
+
+QSpinBox::down-button, QDoubleSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: bottom right;
+    width: 20px;
+    border-left: 1px solid #e0e0e0;
+    border-top: 1px solid #e0e0e0;
+    border-bottom-right-radius: 10px;
+    background: #fcfcfc;
+}
+
+QSpinBox::down-arrow, QDoubleSpinBox::down-arrow {
+    image: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid #55aaff;
+    width: 0px;
+    height: 0px;
+}
+
+QSpinBox::up-button:hover, QSpinBox::down-button:hover { background: #f0f7ff; }
 
 QRadioButton, QCheckBox {
     spacing: 10px;
@@ -207,10 +265,17 @@ QFrame#TopBar, QFrame#StatusBar {
 QFrame#StatusBar { border-top: 1px solid #2c3948; border-bottom: none; }
 QFrame#SidePanel, QFrame#RightPanel, QFrame#CenterPanel { background: #131a23; }
 
-QFrame#Card, QFrame#BrandBadge, QFrame#InfoPill {
+QFrame#Card {
     background: rgba(22, 30, 40, 235);
     border: 1px solid #334354;
     border-radius: 12px;
+}
+
+QFrame#BrandBadge, QFrame#InfoPill {
+    background: rgba(22, 30, 40, 235);
+    border: 1px solid #334354;
+    border-radius: 8px;
+    min-height: 60px;
 }
 
 QLabel#BrandTitle { font-size: 18px; font-weight: 700; color: #8bc0ff; }
@@ -221,8 +286,8 @@ QLabel#FieldLabel { color: #a6b7c9; font-weight: 600; }
 QLabel#ValueBadge {
     background: #1b2430;
     border: 1px solid #344557;
-    border-radius: 10px;
-    padding: 7px 10px;
+    border-radius: 8px;
+    padding: 5px 10px;
     color: #e8f1fb;
 }
 
@@ -257,15 +322,26 @@ QPushButton#GhostButton:hover {
     border-color: #4b6a89;
     color: #a9d0ff;
 }
+QPushButton#GhostButton:pressed, QPushButton#GhostButton:checked {
+    background-color: #2a3a50;
+    border-color: #5a7a99;
+}
 QPushButton#TopIconButton {
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0 12px;
+    min-width: 80px;
+    min-height: 38px;
+    max-height: 38px;
+    padding: 0 10px;
     background-color: #1b2430;
     color: #8bc0ff;
     border: 1px solid #344557;
+    border-radius: 8px;
 }
 QPushButton#TopIconButton:hover { background-color: #223041; border-color: #4b6a89; }
+QPushButton#TopIconButton::menu-indicator {
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+    right: 4px;
+}
 QPushButton#CompactButton {
     min-width: 38px;
     max-width: 38px;
@@ -318,6 +394,46 @@ QComboBox QAbstractItemView {
     color: #e8f1fb;
     border: 1px solid #344557;
 }
+
+QSpinBox::up-button, QDoubleSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: top right;
+    width: 20px;
+    border-left: 1px solid #344557;
+    border-bottom: 1px solid #344557;
+    border-top-right-radius: 10px;
+    background: #223041;
+}
+
+QSpinBox::up-arrow, QDoubleSpinBox::up-arrow {
+    image: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 5px solid #8bc0ff;
+    width: 0px;
+    height: 0px;
+}
+
+QSpinBox::down-button, QDoubleSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: bottom right;
+    width: 20px;
+    border-left: 1px solid #344557;
+    border-top: 1px solid #344557;
+    border-bottom-right-radius: 10px;
+    background: #223041;
+}
+
+QSpinBox::down-arrow, QDoubleSpinBox::down-arrow {
+    image: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid #8bc0ff;
+    width: 0px;
+    height: 0px;
+}
+
+QSpinBox::up-button:hover, QSpinBox::down-button:hover { background: #2a3a50; }
 
 QRadioButton, QCheckBox {
     spacing: 10px;
