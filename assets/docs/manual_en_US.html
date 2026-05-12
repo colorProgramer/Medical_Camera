@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Camera Manual</title>
+    <link rel="stylesheet" href="manual_style.css">
+</head>
+<body>
+    <h1>Medical Camera User Manual (V2.0)</h1>
+<h2>1. Software Overview</h2>
+<p>This software is designed for medical endoscopy imaging systems, supporting Hikvision industrial cameras (GigE/USB3.0) and standard UVC protocol cameras. It provides real-time image acquisition, image parameter control, precision geometric recognition, and result analysis.</p>
+<h2>2. Device Connection and Management</h2>
+<h3>2.1 Camera Type Selection</h3>
+<p>In the "Device List" on the left panel, you can choose:
+- <strong>Hikvision Industrial Camera</strong>: Connect via Hikvision MVS driver, supports high-precision exposure and gain adjustment.
+- <strong>USB Camera</strong>: Supports standard driver-free UVC modules, suitable for most endoscopic modules.</p>
+<h3>2.2 Enumeration and Opening</h3>
+<ul>
+<li>Click the "Refresh" icon to enumerate the hardware currently connected to the system.</li>
+<li>Select the target device and click "Open Camera" to enter the real-time preview.</li>
+<li>If connection fails, check if the device is occupied by other software or if the driver is installed.</li>
+</ul>
+<h2>3. Image Parameter Adjustment</h2>
+<h3>3.1 Exposure and Gain</h3>
+<ul>
+<li><strong>Hikvision Camera</strong>: Supports fine numerical stepping, supports manual/auto exposure switching.</li>
+<li><strong>USB Camera</strong>: Provides standard UVC adjustment items, including brightness, contrast, etc.</li>
+</ul>
+<h3>3.2 White Balance</h3>
+<ul>
+<li>Supports real-time RGB three-channel gain adjustment.</li>
+<li>Recommended to perform "Auto White Balance" calibration under standard color temperature light sources.</li>
+</ul>
+<h2>4. Recognition Control Functions</h2>
+<p>The core function of this system is the automatic detection of specific geometric features in the image.</p>
+<h3>4.1 Recognition Area (Scope)</h3>
+<ul>
+<li><strong>Full Image Mode</strong>: Performs full analysis on the entire frame.</li>
+<li><strong>ROI Selection</strong>: Generate a blue region of interest by dragging the mouse in the preview area, performing recognition only in this region to greatly improve the frame rate.</li>
+<li><strong>Three-Point Circle</strong>: For circular endoscopic fields of view, users click three edge points, and the system automatically fits the perfect circular boundary (Circumcircle).</li>
+</ul>
+<h3>4.2 Field of View Type and Threshold</h3>
+<ul>
+<li>Supports "Circular FOV" and "Rectangular FOV" detection.</li>
+<li><strong>FOV Boundary Threshold</strong>: Adjust the binarization threshold to adapt to different background light intensities.</li>
+<li><strong>Circle Extraction Threshold</strong>: Adjust the sensitivity of circularity fitting.</li>
+</ul>
+<h2>5. Overlay Display and Assistance</h2>
+<p>Assistant lines can be enabled via the "Display Overlay" panel:
+- <strong>FOV Boundary</strong>: Highlights the detected FOV edges.
+- <strong>Inner Shapes</strong>: Displays detected geometric features (e.g., 5-point calibration blocks).
+- <strong>n% FOV Ring</strong>: Custom proportional reference circle for distortion testing.
+- <strong>Crosshair/Starhair</strong>: Assists in composition and center alignment.</p>
+<h2>6. Recognition Result Analysis</h2>
+<p>Recognition results are displayed in real-time in the bottom-right table:
+- <strong>Orientation</strong>: Coordinates of feature points relative to the center.
+- <strong>Major/Minor Axis</strong>: Dimensions of the detected geometry.</p>
+<h2>7. Configuration Management</h2>
+<ul>
+<li><strong>Save Config</strong>: Saves all current camera parameters, recognition algorithm settings, and ROI coordinates locally to <code>config_auto.json</code>.</li>
+<li><strong>Load Config</strong>: Restore a previously saved complex test environment with one click.</li>
+<li><strong>Restore Defaults</strong>: Reset all parameters to factory settings.</li>
+</ul>
+<h2>8. Troubleshooting</h2>
+<ul>
+<li><strong>Black Screen</strong>: Check if the camera is open or if the resolution exceeds hardware bandwidth.</li>
+<li><strong>Inaccurate Recognition</strong>: Ensure uniform lighting and properly adjust the "FOV Boundary Threshold".</li>
+<li><strong>Software Lag</strong>: It is recommended to enable "ROI Selection" mode to reduce the image processing burden.</li>
+</ul>
+</body>
+</html>
+    

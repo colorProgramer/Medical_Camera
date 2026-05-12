@@ -4,6 +4,7 @@ import ctypes
 import os
 from ctypes import POINTER, c_float, c_int, c_int64, c_uint8, c_uint32, c_void_p
 from pathlib import Path
+from medical_camera.utils.path import get_resource_path
 
 from .hikvision_types import (
     McHikDeviceInfo,
@@ -17,10 +18,10 @@ class HikvisionBridgeLoadError(RuntimeError):
 
 
 def default_hikvision_dll_path() -> Path:
-    project_root = Path(__file__).resolve().parents[2]
     candidates = [
-        project_root / "native" / "build_runtime" / "Release" / "medical_camera_hikvision_capi.dll",
-        project_root / "native" / "build" / "Release" / "medical_camera_hikvision_capi.dll",
+        get_resource_path("native/bin/medical_camera_hikvision_capi.dll"),
+        get_resource_path("medical_camera_hikvision_capi.dll"),
+        Path("medical_camera_hikvision_capi.dll"),
     ]
     for candidate in candidates:
         if candidate.exists():

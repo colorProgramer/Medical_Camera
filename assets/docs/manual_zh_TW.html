@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Camera Manual</title>
+    <link rel="stylesheet" href="manual_style.css">
+</head>
+<body>
+    <h1>Medical Camera 醫療相機使用說明書 (V2.0)</h1>
+<h2>1. 軟體概述</h2>
+<p>本軟體專為醫療內視鏡成像系統設計，支援海康工業相機（GigE/USB3.0）及標準 UVC 協議相機。提供即時畫面採集、圖像參數控制、精密幾何識別及結果分析功能。</p>
+<h2>2. 設備連接與管理</h2>
+<h3>2.1 相機類型選擇</h3>
+<p>在左側面板的「設備列表」中，可選擇：
+- <strong>海康工業相機</strong>：通過海康 MVS 驅動連接，支援高精度曝光和增益調節。
+- <strong>USB 相機</strong>：支援標準免驅 UVC 模組，適用於大多數內視鏡模組。</p>
+<h3>2.2 枚舉與打開</h3>
+<ul>
+<li>點擊「刷新」圖標枚舉當前系統連接的硬體。</li>
+<li>選中目標設備後，點擊「打開相機」進入即時預覽。</li>
+<li>若連接失敗，請檢查設備是否被其他軟體占用或驅動是否安裝。</li>
+</ul>
+<h2>3. 圖像參數調節</h2>
+<h3>3.1 曝光與增益</h3>
+<ul>
+<li><strong>海康相機</strong>：支援精細的數值步進，支援手動/自動曝光切換。</li>
+<li><strong>USB 相機</strong>：提供標準 UVC 調節項，包括亮度、對比度等。</li>
+</ul>
+<h3>3.2 白平衡</h3>
+<ul>
+<li>支援即時 RGB 三通道增益調節。</li>
+<li>建議在標準色溫光源下進行「自動白平衡」校準。</li>
+</ul>
+<h2>4. 識別控制功能</h2>
+<p>本系統核心功能在於對圖像中的特定幾何特徵進行自動檢測。</p>
+<h3>4.1 識別區域 (Scope)</h3>
+<ul>
+<li><strong>全圖模式</strong>：對整個畫面進行全量分析。</li>
+<li><strong>ROI 框選</strong>：通過滑鼠在預覽區拖拽生成藍色感興趣區域，僅在該區域內進行識別，極大提高幀率。</li>
+<li><strong>三點定圓</strong>：針對圓形內視鏡視場，用戶點擊三個邊緣點，系統自動擬合出完美的圓形邊界（Circumcircle）。</li>
+</ul>
+<h3>4.2 視場類型與閾值</h3>
+<ul>
+<li>支援「圓形視場」和「矩形視場」檢測。</li>
+<li><strong>視場邊界閾值</strong>：調節二值化閾值，以適應不同的背景光強。</li>
+<li><strong>圓形提取閾值</strong>：調節圓度擬合的敏感度。</li>
+</ul>
+<h2>5. 顯示疊加與輔助</h2>
+<p>通過「顯示疊加」面板可開啟輔助線：
+- <strong>視場邊界</strong>：高亮顯示檢測到的 FOV 邊緣。
+- <strong>視場內圖形</strong>：顯示檢測到的幾何特徵（如 5 點標定塊）。
+- <strong>n% 視場圈</strong>：自定義比例的參考圓環，用於畸變測試。
+- <strong>十字線/米字線</strong>：輔助構圖與中心對齊。</p>
+<h2>6. 識別結果分析</h2>
+<p>識別結果將即時顯示在右下角的表格中：
+- <strong>方位</strong>：特徵點相對於中心的坐標。
+- <strong>長軸/短軸</strong>：檢測到的幾何體尺寸數據。</p>
+<h2>7. 配置管理</h2>
+<ul>
+<li><strong>保存配置</strong>：將當前所有相機參數、識別算法設置、ROI 坐標保存到本地 <code>config_auto.json</code>。</li>
+<li><strong>加載配置</strong>：一鍵恢復之前保存的複雜測試環境。</li>
+<li><strong>恢復默認</strong>：將所有參數重置為出廠狀態。</li>
+</ul>
+<h2>8. 常見問題排查</h2>
+<ul>
+<li><strong>黑屏</strong>：檢查相機是否已打開，或解析度設置是否超出硬體頻寬。</li>
+<li><strong>識別不准</strong>：請確保環境光照均勻，並適當調節「視場邊界閾值」。</li>
+<li><strong>軟體卡頓</strong>：建議開啟「ROI 框選」模式以減少圖像處理負擔。</li>
+</ul>
+</body>
+</html>
+    

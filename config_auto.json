@@ -1,0 +1,39 @@
+{
+    "device_type": "usb",
+    "usb_params": {
+        "width": 1920,
+        "height": 1080,
+        "fps": 30,
+        "pixel_format": "MJPG"
+    },
+    "hik_params": {},
+    "recognition": {
+        "detection_scope": "three_point",
+        "recognition_threshold": 43.0,
+        "shape_threshold": 6,
+        "field_shape": "circle",
+        "pattern_mode": "dark_bg"
+    },
+    "overlay": {
+        "visibility": {
+            "show_fov_boundary": true,
+            "show_ellipses": true,
+            "show_fov_n": false,
+            "show_fov_center": false,
+            "show_screen_center": false
+        },
+        "fov_n_percent": 70.0
+    },
+    "roi": {
+        "x": 0.24737278761061945,
+        "y": 0.1570796460176991,
+        "w": 0.5189435840707965,
+        "h": 0.7721238938053098
+    },
+    "manual_fov_circle": {
+        "cx": 0.5070976806165951,
+        "cy": 0.4991854595349967,
+        "r": 0.2722333054470724
+    },
+    "language": "zh_CN"
+}
